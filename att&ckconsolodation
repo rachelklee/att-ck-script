@@ -1,0 +1,89 @@
+#import modules
+import openpyxl
+from openpyxl import workbook
+from openpyxl import load_workbook
+import pandas as pd
+import xlsxwriter
+
+#MITRE excel to dataframe
+df = pd.read_excel('mitreattacktechniques.xlsx', sheet_name='data')
+
+#print(df)
+
+#setup excel file
+outfile = "mitreatt&ckconsolodated.xlsx"
+wb_out = load_workbook(outfile)
+ws_out = wb_out.active
+
+#counter to know which row of output file to append to
+rowcounter = 1
+
+#set up dataframe for output
+dfout = pd.DataFrame(columns=['technique','tdescription','subtechnique','sdescription','tactic'])
+
+#copy original dataframe to new dataframe only containing necessary categories
+df2 = df[['name','description','tactics']].copy()
+
+#print(df2)
+
+#for loop through all rows of filtered dataframe
+for index, row in df2.iterrows():
+    #
+    #print(row['name'])
+    tech = row['name']
+    desc = row['description']
+    tac = row['tactics']
+
+    #print(desc)
+
+    #if statement for subtechnique
+    if ":" in tech:
+        #print("sub-technique - " + val)
+        #create variables for cell values
+        tech = tech.split(":",1)[1]
+        sdesc = desc
+        tac = tac
+        #print(sub)
+        #create variables for cell locations
+        techloc = "C" + str(rowcounter)
+        sdescloc = "D" + str(rowcounter)
+        tacloc = "E" + str(rowcounter)
+
+        #append to excel
+        ws_out[techloc] = tech
+        ws_out[sdescloc] = sdesc
+        ws_out[tacloc] = tac
+        wb_out.save(outfile)
+
+        #counter increases by 1 for each entry
+        rowcounter += 1
+        #print(rowcounter)
+ 
+    #else statement for main technique
+    else:
+        #create variables for cell values
+        tech = tech
+        #print(stech)
+        desc = desc
+        #print(sdesc)
+        tac = tac
+        #create variables for cell locations
+
+        techloc = "A" + str(rowcounter)
+        descloc = "B" + str(rowcounter)
+        tacloc = "E" + str(rowcounter)
+
+        #append to excel
+        ws_out[techloc] = tech
+        ws_out[descloc] = sdesc
+        ws_out[tacloc] = tac
+        wb_out.save(outfile)
+
+        #counter increases by 1 for each entry
+        rowcounter += 1
+
+        #print("technique - " + val)
+
+    # read column 8 for tactic
+
+    # print text in column 5
